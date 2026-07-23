@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\PengajuanSurat;
+use App\Models\Testimoni;
+
+class PengajuanController extends Controller
+{
+    public function index()
+    {
+        $testimonis = Testimoni::where('disetujui', true)->latest()->take(6)->get();
+        $defaultTestimonis = collect([
+            ['nama'=>'Ibu Sari Dewi','wilayah'=>'Warga RT 03 / RW 01','isi'=>'Sekarang ngurus surat domisili jauh lebih gampang. Persyaratannya sudah bisa dicek di website dulu, jadi pas datang langsung selesai dalam 1 hari. Pelayanannya ramah!','bintang'=>5],
+            ['nama'=>'Bapak Hendra S.','wilayah'=>'Warga RT 07 / RW 02','isi'=>'Alhamdulillah urus SKTM untuk beasiswa anak sangat mudah. Petugasnya sabar menjelaskan persyaratan. Website ini sangat membantu.','bintang'=>5],
+            ['nama'=>'Ibu Nur Hayati','wilayah'=>'Warga RT 12 / RW 04','isi'=>'Formulir bisa diunduh dari website, jadi saya isi dulu di rumah. Waktu datang ke kantor desa proses jadi lebih cepat.','bintang'=>4],
+            ['nama'=>'Bapak Agus W.','wilayah'=>'Warga RT 15 / RW 05','isi'=>'Fitur kirim via WhatsApp sangat praktis. Sebelum datang saya kirim dulu datanya, petugas langsung konfirmasi.','bintang'=>5],
+        ]);
+        if ($testimonis->isEmpty()) { $testimonis = $defaultTestimonis; }
+        return view('home', compact('testimonis'));
+    }
+
+    public function pelayanan()
+    {
+        return view('pages.pelayanan');
+    }
+
+    public function persyaratan()
+    {
+        return view('pages.persyaratan');
+    }
+
+    public function pengajuan()
+    {
+        return view('pages.pengajuan');
+    }
+
+    public function cekStatus()
+    {
+        return view('pages.cek-status');
+    }
+
+    public function searchStatus(Request $request)
+    {
+        $query = $request->input('query');
+        $results = null;
+
+        if ($query) {
+            $results = PengajuanSurat::where('nik', $query)
+                ->orWhere('id', ltrim(str_replace('DKG-' . date('Y') . '-', '', strtoupper($query)), '0') ?: 0)
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($item) {
+                    $item->kode_pengajuan = 'DKG-' . date('Y', strtotime($item->created_at)) . '-' . str_pad($item->id, 4, '0', STR_PAD_LEFT);
+                    return $item;
+                });
+        }
+
+        return view('pages.cek-status', compact('results', 'query'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'jenisSurat'   => 'required',
+            'keperluan'    => 'required',
+            'namaLengkap'  => 'required',
+            'nik'          => 'required|numeric|digits:16',
+            'tempatLahir'  => 'required',
+            'tanggalLahir' => 'required|date',
+            'jenisKelamin' => 'required|in:Laki-laki,Perempuan',
+            'agama'        => 'required',
+            'alamat'       => 'required',
+            'noHP'         => 'required',
+            'pekerjaan'    => 'nullable',
+        ]);
+
+        try {
+            $pengajuan = PengajuanSurat::create([
+                'jenis_surat'   => $validated['jenisSurat'],
+                'keperluan'     => $validated['keperluan'],
+                'nama_lengkap'  => $validated['namaLengkap'],
+                'nik'           => $validated['nik'],
+                'tempat_lahir'  => $validated['tempatLahir'],
+                'tanggal_lahir' => $validated['tanggalLahir'],
+                'jenis_kelamin' => $validated['jenisKelamin'],
+                'agama'         => $validated['agama'],
+                'alamat'        => $validated['alamat'],
+                'no_hp'         => $validated['noHP'],
+                'pekerjaan'     => $validated['pekerjaan'] ?? '-',
+            ]);
+
+            $kode_pengajuan = 'DKG-' . date('Y') . '-' . str_pad($pengajuan->id, 4, '0', STR_PAD_LEFT);
+
+            return response()->json([
+                'status'         => 'success',
+                'message'        => 'Pengajuan berhasil disimpan.',
+                'kode_pengajuan' => $kode_pengajuan
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+}

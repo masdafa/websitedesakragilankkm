@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PengajuanSurat extends Model
@@ -22,4 +23,21 @@ class PengajuanSurat extends Model
         'pekerjaan',
         'status',
     ];
+
+    public function chats()
+    {
+        return $this->hasMany(ChatMessage::class, 'pengajuan_surat_id');
+    }
+
+    public function latestChat()
+    {
+        return $this->hasOne(ChatMessage::class, 'pengajuan_surat_id')->latestOfMany();
+    }
+
+    public function unreadChats()
+    {
+        return $this->hasMany(ChatMessage::class, 'pengajuan_surat_id')
+            ->where('sender', 'user')
+            ->where('read_by_admin', false);
+    }
 }

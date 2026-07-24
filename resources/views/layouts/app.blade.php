@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="Website resmi pelayanan administrasi surat Desa Kragilan, Kecamatan Kragilan, Kabupaten Serang, Provinsi Banten.">
-  <title>Pelayanan Surat - Desa Kragilan</title>
+  <title>{{ $siteInfo->profile_title ?? 'Pelayanan Surat' }} - Desa Kragilan</title>
   <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,12 +19,12 @@
 <div class="top-bar">
   <div class="container top-bar-inner">
     <div class="top-bar-left">
-      <span><i class="fas fa-map-marker-alt"></i> Kec. Kragilan, Kab. Serang, Banten</span>
-      <span><i class="fas fa-clock"></i> Senin &ndash; Jumat: 08.00 &ndash; 14.00 WIB</span>
+      <span><i class="fas fa-map-marker-alt"></i> {{ $siteInfo->contact_address }}</span>
+      <span><i class="fas fa-clock"></i> {{ explode("\n", $siteInfo->service_hours)[0] ?? $siteInfo->service_hours }}</span>
     </div>
     <div class="top-bar-right">
-      <a href="https://wa.me/6282112345678" target="_blank"><i class="fab fa-whatsapp"></i> 0821-1234-5678</a>
-      <a href="mailto:desa@kragilan.go.id"><i class="fas fa-envelope"></i> desa@kragilan.go.id</a>
+      <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $siteInfo->contact_whatsapp) }}" target="_blank"><i class="fab fa-whatsapp"></i> {{ $siteInfo->contact_whatsapp }}</a>
+      <a href="mailto:{{ $siteInfo->contact_email }}"><i class="fas fa-envelope"></i> {{ $siteInfo->contact_email }}</a>
     </div>
   </div>
 </div>
@@ -36,8 +36,8 @@
       <img src="{{ asset('assets/images/favicon.svg') }}" alt="Logo Desa Kragilan" class="logo"/>
       <div class="header-text">
         <span class="header-label">PEMERINTAH DESA</span>
-        <h1 class="header-title">DESA KRAGILAN</h1>
-        <span class="header-sub">Kecamatan Kragilan &bull; Kabupaten Serang &bull; Provinsi Banten</span>
+        <h1 class="header-title">{{ $siteInfo->profile_title ?? 'Desa Kragilan' }}</h1>
+        <span class="header-sub">{{ $siteInfo->profile_subtitle ?? 'Kecamatan Kragilan • Kabupaten Serang • Provinsi Banten' }}</span>
       </div>
     </div>
     <nav class="main-nav">
@@ -83,15 +83,15 @@
         <div class="footer-logo-wrap">
           <img src="{{ asset('assets/images/favicon.svg') }}" alt="Logo Desa Kragilan" class="footer-logo"/>
           <div>
-            <div class="footer-brand-name">Desa Kragilan</div>
-            <div class="footer-brand-sub">Kec. Kragilan, Kab. Serang, Banten</div>
+            <div class="footer-brand-name">{{ $siteInfo->profile_title }}</div>
+            <div class="footer-brand-sub">{{ $siteInfo->profile_subtitle }}</div>
           </div>
         </div>
         <p class="footer-desc">Website resmi pelayanan administrasi surat Desa Kragilan. Melayani warga dengan cepat, mudah, dan transparan.</p>
         <div class="footer-socials">
           <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://wa.me/6282112345678" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-          <a href="mailto:desa@kragilan.go.id" title="Email"><i class="fas fa-envelope"></i></a>
+          <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $siteInfo->contact_whatsapp) }}" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="mailto:{{ $siteInfo->contact_email }}" title="Email"><i class="fas fa-envelope"></i></a>
           <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
         </div>
       </div>
@@ -120,11 +120,11 @@
       <div class="footer-col">
         <h4 class="footer-heading">Kontak Kami</h4>
         <ul class="footer-contact-list">
-          <li><i class="fas fa-map-marker-alt"></i><span>Jl. Raya Kragilan No. 1, Desa Kragilan, Kec. Kragilan, Kab. Serang, Banten 42183</span></li>
-          <li><i class="fas fa-phone-alt"></i><span>(0254) 123-4567</span></li>
-          <li><i class="fab fa-whatsapp"></i><span>0821-1234-5678</span></li>
-          <li><i class="fas fa-envelope"></i><span>desa@kragilan.go.id</span></li>
-          <li><i class="fas fa-clock"></i><span>Senin &ndash; Jumat: 08.00 &ndash; 14.00 WIB</span></li>
+          <li><i class="fas fa-map-marker-alt"></i><span>{{ $siteInfo->contact_address }}</span></li>
+          <li><i class="fas fa-phone-alt"></i><span>{{ $siteInfo->contact_phone }}</span></li>
+          <li><i class="fab fa-whatsapp"></i><span>{{ $siteInfo->contact_whatsapp }}</span></li>
+          <li><i class="fas fa-envelope"></i><span>{{ $siteInfo->contact_email }}</span></li>
+          <li><i class="fas fa-clock"></i><span>{{ explode("\n", $siteInfo->service_hours)[0] ?? $siteInfo->service_hours }}</span></li>
         </ul>
       </div>
     </div>
@@ -132,7 +132,9 @@
   <div class="footer-bottom">
     <div class="container footer-bottom-inner">
       <span>&copy; 2025 Pemerintah Desa Kragilan. Semua hak dilindungi.</span>
-      <span>Dikembangkan oleh <strong>KKM Kelompok 35 &ndash; Universitas Bina Bangsa</strong></span>
+      <span>
+        Dikembangkan oleh <strong>KKM Kelompok 35 &ndash; Universitas Bina Bangsa</strong>
+      </span>
     </div>
   </div>
 </footer>
@@ -142,9 +144,9 @@
   <div class="ann-inner container">
     <span class="ann-icon"><i class="fas fa-bullhorn"></i></span>
     <marquee behavior="scroll" direction="left">
-      <strong>Jam Pelayanan:</strong> Senin &ndash; Jumat, Pukul 08.00 &ndash; 14.00 WIB &nbsp;|&nbsp;
+      <strong>Jam Pelayanan:</strong> {{ $siteInfo->service_hours }} &nbsp;|&nbsp;
       Harap membawa dokumen asli dan fotokopi &nbsp;|&nbsp;
-      Informasi: 0821-1234-5678 (WhatsApp) &nbsp;|&nbsp;
+      Informasi: {{ $siteInfo->contact_whatsapp }} (WhatsApp) &nbsp;|&nbsp;
       Pelayanan tutup pada hari libur nasional &nbsp;|&nbsp;
       Pengajuan online tersedia 24 jam melalui website ini
     </marquee>

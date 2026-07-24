@@ -148,7 +148,7 @@ document.getElementById('formPengajuanPage').addEventListener('submit', async fu
       const nama = formData.get('namaLengkap');
       const jenis = formData.get('jenisSurat');
       const kode = data.kode_pengajuan;
-      const noHP = '6282112345678';
+      const noHP = '{{ preg_replace('/[^0-9]/', '', $siteInfo->contact_whatsapp ?: '6282112345678') }}';
       const pesan = encodeURIComponent(
         `Halo Admin Desa Kragilan,\n\nSaya ingin mengajukan:\n- Jenis Surat: ${jenis}\n- Nama: ${nama}\n- Kode Pengajuan: ${kode}\n\nMohon bantuannya. Terima kasih.`
       );

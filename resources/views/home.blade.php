@@ -5,8 +5,8 @@
   <div class="hero-overlay"></div>
   <div class="hero-content container">
     <span class="badge-hero"><i class="fas fa-check-circle"></i> Layanan Aktif</span>
-    <h2>Pelayanan Administrasi Surat<br/>Desa Kragilan</h2>
-    <p>Urus surat desa lebih mudah, cepat, dan transparan.<br/>Cek persyaratan sebelum datang agar tidak bolak-balik.</p>
+    <h2>{{ $siteInfo->profile_title }}</h2>
+    <p>{{ $siteInfo->profile_subtitle }}</p>
     <div class="hero-actions">
       <a href="{{ route('pelayanan') }}" class="btn btn-primary"><i class="fas fa-file-alt"></i> Lihat Jenis Surat</a>
       <a href="{{ route('persyaratan') }}" class="btn btn-outline"><i class="fas fa-list-check"></i> Cek Persyaratan</a>
@@ -69,24 +69,24 @@
   <div class="container">
     <div class="section-header">
       <span class="section-tag">Profil Desa</span>
-      <h2>Mengenal Desa Kragilan</h2>
-      <p>Informasi umum tentang pemerintahan dan wilayah Desa Kragilan</p>
+      <h2>{{ $siteInfo->profile_title }}</h2>
+      <p>{{ $siteInfo->profile_subtitle }}</p>
     </div>
     <div class="profil-visimisi">
       <div class="visimisi-card visi">
         <div class="visimisi-icon"><i class="fas fa-eye"></i></div>
         <h3>Visi</h3>
-        <p>"Terwujudnya Desa Kragilan yang Maju, Mandiri, dan Sejahtera Berbasis Potensi Lokal dengan Tata Kelola Pemerintahan yang Bersih dan Transparan"</p>
+        <p>{!! nl2br(e($siteInfo->vision)) !!}</p>
       </div>
       <div class="visimisi-card misi">
         <div class="visimisi-icon"><i class="fas fa-bullseye"></i></div>
         <h3>Misi</h3>
         <ul>
-          <li><i class="fas fa-check"></i> Meningkatkan kualitas pelayanan administrasi kepada masyarakat</li>
-          <li><i class="fas fa-check"></i> Mengembangkan potensi ekonomi lokal dan UMKM desa</li>
-          <li><i class="fas fa-check"></i> Meningkatkan kualitas infrastruktur dan fasilitas umum</li>
-          <li><i class="fas fa-check"></i> Memberdayakan masyarakat melalui pendidikan dan pelatihan</li>
-          <li><i class="fas fa-check"></i> Mewujudkan tata kelola pemerintahan yang transparan dan akuntabel</li>
+          @foreach(explode("\n", $siteInfo->mission) as $mission)
+            @if(trim($mission))
+              <li><i class="fas fa-check"></i> {{ trim($mission) }}</li>
+            @endif
+          @endforeach
         </ul>
       </div>
     </div>
@@ -98,85 +98,83 @@
     </div>
     <div class="struktur-wrap">
 
-      <!-- Baris 1: Kepala Desa + BPD -->
+      @php
+        $kepala = $orgMembers->firstWhere('category', 'kepala');
+        $bpd = $orgMembers->firstWhere('category', 'bpd');
+        $sekretaris = $orgMembers->firstWhere('category', 'sekretaris');
+        $kaurs = $orgMembers->where('category', 'kaur');
+        $kasis = $orgMembers->where('category', 'kasi');
+        $kampung = $orgMembers->firstWhere('category', 'kampung');
+      @endphp
+
       <div class="struktur-top">
+        @if($kepala)
         <div class="struktur-card kepala">
-          <div class="struktur-avatar"><i class="fas fa-user-tie"></i></div>
-          <div class="struktur-nama">Budy Cahyadi, S.Sos</div>
-          <div class="struktur-jabatan">Pj. Kepala Desa</div>
+          <div class="struktur-avatar"><i class="fas {{ $kepala->icon ?: 'fa-user-tie' }}"></i></div>
+          <div class="struktur-nama">{{ $kepala->name }}</div>
+          <div class="struktur-jabatan">{{ $kepala->position }}</div>
         </div>
+        @endif
+        @if($bpd)
         <div class="struktur-card bpd">
-          <div class="struktur-avatar"><i class="fas fa-landmark"></i></div>
-          <div class="struktur-nama">BPD</div>
-          <div class="struktur-jabatan">Badan Permusyawaratan Desa</div>
+          <div class="struktur-avatar"><i class="fas {{ $bpd->icon ?: 'fa-landmark' }}"></i></div>
+          <div class="struktur-nama">{{ $bpd->name }}</div>
+          <div class="struktur-jabatan">{{ $bpd->position }}</div>
         </div>
+        @endif
       </div>
 
-      <!-- Baris 2: Sekretaris Desa -->
       <div class="struktur-line-v"></div>
+      @if($sekretaris)
       <div class="struktur-mid">
         <div class="struktur-card sekretaris">
-          <div class="struktur-avatar"><i class="fas fa-user"></i></div>
-          <div class="struktur-nama">Elzan Haerul Yahya</div>
-          <div class="struktur-jabatan">Sekretaris Desa</div>
+          <div class="struktur-avatar"><i class="fas {{ $sekretaris->icon ?: 'fa-user' }}"></i></div>
+          <div class="struktur-nama">{{ $sekretaris->name }}</div>
+          <div class="struktur-jabatan">{{ $sekretaris->position }}</div>
         </div>
       </div>
+      @endif
 
-      <!-- Baris 3: Kaur (3 orang) + Kasi (3 orang) -->
       <div class="struktur-line-v"></div>
       <div class="struktur-line-h"></div>
 
-      <!-- Kaur -->
+      @if($kaurs->isNotEmpty())
       <div class="struktur-group-label">Kepala Urusan (Kaur)</div>
       <div class="struktur-bottom">
+        @foreach($kaurs as $member)
         <div class="struktur-card kaur">
-          <div class="struktur-avatar"><i class="fas fa-desktop"></i></div>
-          <div class="struktur-nama">Suherman</div>
-          <div class="struktur-jabatan">Kaur Tata Usaha & Umum</div>
+          <div class="struktur-avatar"><i class="fas {{ $member->icon ?: 'fa-desktop' }}"></i></div>
+          <div class="struktur-nama">{{ $member->name }}</div>
+          <div class="struktur-jabatan">{{ $member->position }}</div>
         </div>
-        <div class="struktur-card kaur">
-          <div class="struktur-avatar"><i class="fas fa-coins"></i></div>
-          <div class="struktur-nama">Vanesa Adni</div>
-          <div class="struktur-jabatan">Kaur Keuangan</div>
-        </div>
-        <div class="struktur-card kaur">
-          <div class="struktur-avatar"><i class="fas fa-chart-bar"></i></div>
-          <div class="struktur-nama">Aspari</div>
-          <div class="struktur-jabatan">Kaur Perencanaan</div>
-        </div>
+        @endforeach
       </div>
+      @endif
 
-      <!-- Kasi -->
+      @if($kasis->isNotEmpty())
       <div class="struktur-group-label" style="margin-top:28px;">Kepala Seksi (Kasi)</div>
       <div class="struktur-bottom">
+        @foreach($kasis as $member)
         <div class="struktur-card kasi">
-          <div class="struktur-avatar"><i class="fas fa-file-invoice"></i></div>
-          <div class="struktur-nama">Ipa Fita Hidayani</div>
-          <div class="struktur-jabatan">Kasi Pemerintahan</div>
+          <div class="struktur-avatar"><i class="fas {{ $member->icon ?: 'fa-file-invoice' }}"></i></div>
+          <div class="struktur-nama">{{ $member->name }}</div>
+          <div class="struktur-jabatan">{{ $member->position }}</div>
         </div>
-        <div class="struktur-card kasi">
-          <div class="struktur-avatar"><i class="fas fa-concierge-bell"></i></div>
-          <div class="struktur-nama">Arif Kurniawan</div>
-          <div class="struktur-jabatan">Kasi Pelayanan</div>
-        </div>
-        <div class="struktur-card kasi">
-          <div class="struktur-avatar"><i class="fas fa-hands-helping"></i></div>
-          <div class="struktur-nama">M. Fauzi Al Ghifari</div>
-          <div class="struktur-jabatan">Kasi Kesejahteraan</div>
-        </div>
+        @endforeach
       </div>
+      @endif
 
-      <!-- Kampung -->
+      @if($kampung)
       <div class="struktur-line-v"></div>
       <div class="struktur-bottom">
         <div class="struktur-card kampung">
-          <div class="struktur-avatar"><i class="fas fa-home"></i></div>
-          <div class="struktur-nama">Kampung / RT / RW</div>
-          <div class="struktur-jabatan">Tingkat Kampung</div>
+          <div class="struktur-avatar"><i class="fas {{ $kampung->icon ?: 'fa-home' }}"></i></div>
+          <div class="struktur-nama">{{ $kampung->name }}</div>
+          <div class="struktur-jabatan">{{ $kampung->position }}</div>
         </div>
       </div>
+      @endif
 
-      <!-- Legenda -->
       <div class="struktur-legenda">
         <span><span class="leg-line konsultasi"></span> Garis Konsultasi</span>
         <span><span class="leg-line komando"></span> Garis Komando</span>
@@ -191,7 +189,7 @@
         <i class="fas fa-map"></i>
         <div>
           <div class="infodesa-label">Luas Wilayah</div>
-          <div class="infodesa-val">Ã‚Â± 312 Ha</div>
+          <div class="infodesa-val">± 312 Ha</div>
         </div>
       </div>
       <div class="infodesa-card">
@@ -286,7 +284,7 @@
         <div class="alur-num">3</div>
         <div class="alur-icon"><i class="fas fa-building"></i></div>
         <h3>Datang ke Kantor Desa</h3>
-        <p>Kunjungi kantor desa pada jam pelayanan SeninÃ¢â‚¬â€œJumat pukul 08.00Ã¢â‚¬â€œ14.00 WIB.</p>
+        <p>Kunjungi kantor desa pada jam pelayanan Senin–Jumat pukul 08.00–14.00 WIB.</p>
       </div>
       <div class="alur-arrow"><i class="fas fa-chevron-right"></i></div>
       <div class="alur-step">
@@ -300,7 +298,7 @@
         <div class="alur-num">5</div>
         <div class="alur-icon"><i class="fas fa-envelope-open-text"></i></div>
         <h3>Ambil Surat</h3>
-        <p>Surat akan selesai dalam 1Ã¢â‚¬â€œ3 hari kerja. Anda akan dihubungi via WhatsApp saat surat siap diambil.</p>
+        <p>Surat akan selesai dalam 1–3 hari kerja. Anda akan dihubungi via WhatsApp saat surat siap diambil.</p>
       </div>
     </div>
   </div>
@@ -320,7 +318,7 @@
           <i class="fas fa-plus"></i>
         </button>
         <div class="faq-a">
-          <p>Sebagian besar surat dapat selesai dalam <strong>1 hari kerja</strong>. Untuk surat yang memerlukan survei lapangan seperti surat tanah atau IMB, proses dapat memakan waktu 2Ã¢â‚¬â€œ3 hari kerja.</p>
+          <p>Sebagian besar surat dapat selesai dalam <strong>1 hari kerja</strong>. Untuk surat yang memerlukan survei lapangan seperti surat tanah atau IMB, proses dapat memakan waktu 2–3 hari kerja.</p>
         </div>
       </div>
       <div class="faq-item">
@@ -385,15 +383,15 @@
     <div class="berita-grid">
 
       <div class="berita-card featured">
-        <div class="berita-badge">Ã°Å¸â€œÂ¢ Pengumuman</div>
+        <div class="berita-badge">📢 Pengumuman</div>
         <div class="berita-date"><i class="fas fa-calendar"></i> 20 Juli 2025</div>
         <h3>Penyesuaian Jam Layanan Selama Bulan Juli 2025</h3>
-        <p>Kantor Desa Kragilan menyesuaikan jam pelayanan selama masa liburan sekolah. Pelayanan tetap buka SeninÃ¢â‚¬â€œJumat pukul 08.00Ã¢â‚¬â€œ14.00 WIB. Khusus Jumat ditutup pukul 11.00 WIB.</p>
+        <p>Kantor Desa Kragilan menyesuaikan jam pelayanan selama masa liburan sekolah. Pelayanan tetap buka Senin–Jumat pukul 08.00–14.00 WIB. Khusus Jumat ditutup pukul 11.00 WIB.</p>
         <span class="berita-tag pengumuman">Pelayanan</span>
       </div>
 
       <div class="berita-card">
-        <div class="berita-badge">Ã°Å¸Å½â€œ Sosial</div>
+        <div class="berita-badge">🌍 Sosial</div>
         <div class="berita-date"><i class="fas fa-calendar"></i> 15 Juli 2025</div>
         <h3>Pendaftaran Beasiswa Bidikmisi 2025 Dibuka</h3>
         <p>Warga yang memerlukan Surat Pengantar Beasiswa untuk keperluan Bidikmisi dapat segera mengurus ke kantor desa. Siapkan persyaratan yang diperlukan.</p>
@@ -401,7 +399,7 @@
       </div>
 
       <div class="berita-card">
-        <div class="berita-badge">Ã°Å¸ÂËœÃ¯Â¸Â Kegiatan</div>
+        <div class="berita-badge">🎯 Kegiatan</div>
         <div class="berita-date"><i class="fas fa-calendar"></i> 10 Juli 2025</div>
         <h3>Gotong Royong Pembersihan Lingkungan RT 05</h3>
         <p>Kegiatan gotong royong rutin bulanan Desa Kragilan berjalan lancar. Warga antusias berpartisipasi dalam menjaga kebersihan dan keindahan lingkungan desa.</p>
@@ -409,7 +407,7 @@
       </div>
 
       <div class="berita-card">
-        <div class="berita-badge">Ã°Å¸â€™Â° Bantuan</div>
+        <div class="berita-badge">🤝 Bantuan</div>
         <div class="berita-date"><i class="fas fa-calendar"></i> 5 Juli 2025</div>
         <h3>Penyaluran Bantuan PKH Tahap III 2025</h3>
         <p>Penyaluran bantuan Program Keluarga Harapan (PKH) tahap III tahun 2025 untuk warga penerima manfaat di Desa Kragilan telah selesai dilaksanakan.</p>
@@ -417,7 +415,7 @@
       </div>
 
       <div class="berita-card">
-        <div class="berita-badge">Ã°Å¸Å¡Â§ Infrastruktur</div>
+        <div class="berita-badge">🚧 Infrastruktur</div>
         <div class="berita-date"><i class="fas fa-calendar"></i> 1 Juli 2025</div>
         <h3>Perbaikan Jalan Desa RW 03 Dimulai</h3>
         <p>Proyek perbaikan jalan desa di wilayah RW 03 resmi dimulai. Warga diimbau berhati-hati saat melintas di area konstruksi selama proses pengerjaan berlangsung.</p>
@@ -425,7 +423,7 @@
       </div>
 
       <div class="berita-card">
-        <div class="berita-badge">Ã°Å¸â€œâ€¹ Administrasi</div>
+        <div class="berita-badge">📝 Administrasi</div>
         <div class="berita-date"><i class="fas fa-calendar"></i> 25 Juni 2025</div>
         <h3>Pemutakhiran Data Penduduk Semester I 2025</h3>
         <p>Desa Kragilan mengadakan pemutakhiran data kependudukan semester I 2025. Warga yang belum memperbarui data KTP dan KK diimbau segera melapor ke kantor desa.</p>
@@ -598,25 +596,25 @@
       <div class="kontak-card">
         <i class="fas fa-map-marker-alt"></i>
         <h3>Alamat Kantor</h3>
-        <p>Jl. Raya Keragilan No. 01, Desa Kragilan,<br/>Kecamatan Kragilan, Kabupaten Serang,<br/>Provinsi Banten</p>
+        <p>{!! nl2br(e($siteInfo->contact_address)) !!}</p>
       </div>
       <div class="kontak-card">
         <i class="fas fa-clock"></i>
         <h3>Jam Pelayanan</h3>
-        <p>Senin Ã¢â‚¬â€œ Kamis: 08.00 Ã¢â‚¬â€œ 14.00 WIB<br/>Jumat: 08.00 Ã¢â‚¬â€œ 11.00 WIB<br/>Sabtu Ã¢â‚¬â€œ Minggu: Tutup</p>
+        <p>{!! nl2br(e($siteInfo->service_hours)) !!}</p>
       </div>
       <div class="kontak-card">
         <i class="fab fa-whatsapp"></i>
         <h3>WhatsApp</h3>
-        <p>0821-1234-5678<br/><small>(Untuk konfirmasi persyaratan & jadwal)</small></p>
-        <a href="https://wa.me/6282112345678" class="btn btn-primary" style="margin-top:10px;">
+        <p>{{ $siteInfo->contact_whatsapp }}<br/><small>(Untuk konfirmasi persyaratan & jadwal)</small></p>
+        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $siteInfo->contact_whatsapp) }}" class="btn btn-primary" style="margin-top:10px;">
           <i class="fab fa-whatsapp"></i> Chat WhatsApp
         </a>
       </div>
       <div class="kontak-card">
         <i class="fas fa-envelope"></i>
         <h3>Email</h3>
-        <p>desakragilan@gmail.com</p>
+        <p>{{ $siteInfo->contact_email }}</p>
       </div>
     </div>
 

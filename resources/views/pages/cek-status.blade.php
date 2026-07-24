@@ -118,7 +118,7 @@
             <i class="fab fa-whatsapp"></i>
           </div>
           <h4>Hubungi Petugas</h4>
-          <p>Butuh bantuan? Hubungi kami via WhatsApp di <a href="https://wa.me/6282112345678" style="color:var(--green); font-weight:600;">0821-1234-5678</a>.</p>
+          <p>Butuh bantuan? Hubungi kami via WhatsApp di <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $siteInfo->contact_whatsapp) }}" style="color:var(--green); font-weight:600;">{{ $siteInfo->contact_whatsapp }}</a>.</p>
         </div>
       </div>
     @endif

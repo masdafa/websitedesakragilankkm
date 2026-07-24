@@ -7,7 +7,7 @@
     <div>
       <div class="page-breadcrumb"><a href="{{ route("home") }}">Beranda</a> <i class="fas fa-chevron-right"></i> Pelayanan</div>
       <h2 class="page-title">Pelayanan Administrasi Surat</h2>
-      <p class="page-subtitle">Temukan jenis surat yang Anda butuhkan dan ajukan secara online</p>
+      <p class="page-subtitle">{{ $siteInfo->service_page_subtitle }}</p>
     </div>
     <a href="{{ route("pengajuan") }}" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Ajukan Sekarang</a>
   </div>

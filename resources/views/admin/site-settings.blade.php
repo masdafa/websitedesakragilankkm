@@ -37,6 +37,9 @@
 .settings-tab:hover:not(.active) { color:#374151; }
 .tab-pane { display:none; }
 .tab-pane.active { display:block; }
+@media (max-width: 768px) {
+  #settingsTabs { flex-direction: column; }
+}
 </style>
 
 <form method="POST" action="{{ route('admin.site.settings.update') }}">

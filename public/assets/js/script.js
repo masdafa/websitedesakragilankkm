@@ -185,14 +185,18 @@ function renderSyarat(key) {
 // PERSYARATAN TAB SWITCH
 // ============================
 function switchSyarat(key, btn) {
-  document.getElementById('syaratContent').innerHTML = renderSyarat(key);
+  const contentDiv = document.getElementById('syaratContent');
+  if (!contentDiv) return;
+  contentDiv.innerHTML = renderSyarat(key);
   document.querySelectorAll('.syarat-tab').forEach(t => t.classList.remove('active'));
   if (btn) btn.classList.add('active');
 }
 
 // Init default tab
 document.addEventListener('DOMContentLoaded', () => {
-  switchSyarat('domisili');
+  if (document.getElementById('syaratContent')) {
+    switchSyarat('domisili');
+  }
 
   // ============================
   // FILTER SURAT
@@ -220,14 +224,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================
   const hamburger = document.getElementById('hamburger');
   const mobileNav = document.getElementById('mobileNav');
-  hamburger.addEventListener('click', () => {
-    mobileNav.classList.toggle('open');
-  });
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', () => {
+      mobileNav.classList.toggle('open');
+    });
 
-  // Close mobile nav on link click
-  mobileNav.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => mobileNav.classList.remove('open'));
-  });
+    // Close mobile nav on link click
+    mobileNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => mobileNav.classList.remove('open'));
+    });
+  }
 });
 
 // ============================

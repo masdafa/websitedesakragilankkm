@@ -21,7 +21,14 @@
 <form method="POST" action="{{ isset($umkm) ? route('admin.umkm.update', $umkm->id) : route('admin.umkm.store') }}" id="umkmForm" enctype="multipart/form-data">
 @csrf
 
-<div style="display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start;">
+<style>
+  .umkm-form-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+  @media (max-width: 992px) {
+    .umkm-form-layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="umkm-form-layout">
 
   <!-- ── LEFT COLUMN ── -->
   <div style="display:flex; flex-direction:column; gap:20px;">

@@ -485,6 +485,7 @@
     .adm-main { margin-left: 0; }
     .adm-menu-toggle { display: flex; }
     .adm-topbar { padding: 0 16px; }
+    .adm-breadcrumb { display: none; }
     .adm-page { padding: 16px; }
     .adm-stats { grid-template-columns: repeat(2, 1fr); }
     .adm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 199; display: none; }

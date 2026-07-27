@@ -22,8 +22,8 @@ class SiteInfo extends Model
     public static function defaults()
     {
         return new static([
-            'profile_title' => 'Mengenal Desa Kragilan',
-            'profile_subtitle' => 'Informasi umum tentang pemerintahan dan wilayah Desa Kragilan',
+            'profile_title' => 'Desa Kragilan',
+            'profile_subtitle' => 'Website layanan pembuatan surat dan informasi',
             'vision' => '"Terwujudnya Desa Kragilan yang Maju, Mandiri, dan Sejahtera Berbasis Potensi Lokal dengan Tata Kelola Pemerintahan yang Bersih dan Transparan"',
             'mission' => "Meningkatkan kualitas pelayanan administrasi kepada masyarakat\nMengembangkan potensi ekonomi lokal dan UMKM desa\nMeningkatkan kualitas infrastruktur dan fasilitas umum\nMemberdayakan masyarakat melalui pendidikan dan pelatihan\nMewujudkan tata kelola pemerintahan yang transparan dan akuntabel",
             'service_page_subtitle' => 'Temukan jenis surat yang Anda butuhkan dan ajukan secara online',

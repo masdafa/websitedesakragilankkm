@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -47,6 +47,7 @@
       <a href="{{ route('persyaratan') }}" class="{{ request()->routeIs('persyaratan') ? 'active' : '' }}">Persyaratan</a>
       <a href="{{ route('pengajuan') }}" class="{{ request()->routeIs('pengajuan') ? 'active' : '' }}">Pengajuan</a>
       <a href="{{ route('cek-status') }}" class="{{ request()->routeIs('cek-status*') ? 'active' : '' }}">Cek Status</a>
+      <a href="{{ route('umkm') }}" class="{{ request()->routeIs('umkm') ? 'active' : '' }}">UMKM</a>
       <a href="{{ route('home') }}#panduan">Panduan</a>
       <a href="{{ route('home') }}#kontak">Kontak</a>
     </nav>
@@ -68,6 +69,7 @@
     <a href="{{ route('persyaratan') }}" class="{{ request()->routeIs('persyaratan') ? 'active' : '' }}">Persyaratan</a>
     <a href="{{ route('pengajuan') }}" class="{{ request()->routeIs('pengajuan') ? 'active' : '' }}">Pengajuan</a>
     <a href="{{ route('cek-status') }}" class="{{ request()->routeIs('cek-status*') ? 'active' : '' }}">Cek Status</a>
+    <a href="{{ route('umkm') }}" class="{{ request()->routeIs('umkm') ? 'active' : '' }}">UMKM</a>
     <a href="{{ route('home') }}#panduan">Panduan</a>
     <a href="{{ route('home') }}#kontak">Kontak</a>
   </nav>
@@ -102,6 +104,7 @@
           <li><a href="#profil"><i class="fas fa-chevron-right"></i> Profil Desa</a></li>
           <li><a href="{{ route('pelayanan') }}"><i class="fas fa-chevron-right"></i> Pelayanan</a></li>
           <li><a href="{{ route('persyaratan') }}"><i class="fas fa-chevron-right"></i> Persyaratan</a></li>
+          <li><a href="{{ route('umkm') }}"><i class="fas fa-chevron-right"></i> UMKM Desa</a></li>
           <li><a href="#panduan"><i class="fas fa-chevron-right"></i> Panduan Pengajuan</a></li>
           <li><a href="#kontak"><i class="fas fa-chevron-right"></i> Kontak</a></li>
         </ul>

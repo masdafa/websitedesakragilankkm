@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PengajuanController;
+use App\Http\Controllers\UmkmController;
 
 Route::get('/', [PengajuanController::class, 'index'])->name('home');
 Route::get('/pelayanan', [PengajuanController::class, 'pelayanan'])->name('pelayanan');
@@ -12,6 +13,8 @@ Route::get('/cek-status', [PengajuanController::class, 'cekStatus'])->name('cek-
 Route::post('/submit-pengajuan', [PengajuanController::class, 'store'])->name('pengajuan.store');
 Route::get('/cek-status/search', [PengajuanController::class, 'searchStatus'])->name('cek-status.search');
 Route::post('/testimoni', [App\Http\Controllers\TestimoniController::class, 'store'])->name('testimoni.store');
+Route::get('/umkm', [UmkmController::class, 'index'])->name('umkm');
+Route::get('/umkm/{id}', [UmkmController::class, 'show'])->name('umkm.show');
 
 Route::get('/admin/login', [AdminController::class, 'loginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.post');
@@ -28,3 +31,12 @@ Route::post('/admin/site-settings', [AdminController::class, 'updateSiteSettings
 Route::post('/admin/org-members', [AdminController::class, 'storeOrgMember'])->name('admin.org.store');
 Route::post('/admin/org-members/{id}', [AdminController::class, 'updateOrgMember'])->name('admin.org.update');
 Route::post('/admin/org-members/{id}/delete', [AdminController::class, 'deleteOrgMember'])->name('admin.org.delete');
+
+// UMKM Admin Routes
+Route::get('/admin/umkm', [UmkmController::class, 'adminIndex'])->name('admin.umkm.index');
+Route::get('/admin/umkm/create', [UmkmController::class, 'adminCreate'])->name('admin.umkm.create');
+Route::post('/admin/umkm', [UmkmController::class, 'adminStore'])->name('admin.umkm.store');
+Route::get('/admin/umkm/{id}/edit', [UmkmController::class, 'adminEdit'])->name('admin.umkm.edit');
+Route::post('/admin/umkm/{id}', [UmkmController::class, 'adminUpdate'])->name('admin.umkm.update');
+Route::post('/admin/umkm/{id}/delete', [UmkmController::class, 'adminDestroy'])->name('admin.umkm.destroy');
+Route::post('/admin/umkm/{id}/toggle', [UmkmController::class, 'adminToggle'])->name('admin.umkm.toggle');

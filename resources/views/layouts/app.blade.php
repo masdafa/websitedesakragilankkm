@@ -51,13 +51,7 @@
       <a href="{{ route('home') }}#panduan">Panduan</a>
       <a href="{{ route('home') }}#kontak">Kontak</a>
     </nav>
-    <div class="logo-kkm-wrap">
-      <img src="{{ asset('assets/images/logo-kkm.jpg') }}" alt="KKM Kelompok 35 Universitas Bina Bangsa" class="logo-kkm"/>
-      <div class="logo-kkm-text">
-        <span>KKM Kelompok 35</span>
-        <span>Universitas Bina Bangsa</span>
-      </div>
-    </div>
+
     <button class="hamburger" id="hamburger" aria-label="Menu">
       <i class="fas fa-bars"></i>
     </button>

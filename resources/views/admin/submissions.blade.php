@@ -47,6 +47,8 @@
         <tr>
           <th>Kode / Pemohon</th>
           <th>Jenis Surat</th>
+          <th>NIK</th>
+          <th>Alamat</th>
           <th>No. HP</th>
           <th>Waktu</th>
           <th>Chat</th>
@@ -65,7 +67,14 @@
             <span style="font-size:12.5px;color:#374151;">{{ Str::limit($item->jenis_surat, 35) }}</span>
           </td>
           <td>
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/','', $item->no_hp) }}" target="_blank"
+            <span style="font-size:12px;color:#374151;font-family:monospace;letter-spacing:.5px;">{{ $item->nik ?? '-' }}</span>
+          </td>
+          <td>
+            <span style="font-size:12px;color:#374151;max-width:160px;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="{{ $item->alamat }}">{{ Str::limit($item->alamat ?? '-', 30) }}</span>
+          </td>
+          <td>
+            <a href="whatsapp://send?phone={{ preg_replace('/[^0-9]/','', $item->no_hp) }}"
+               onclick="bukaWA(event, '{{ preg_replace('/[^0-9]/','', $item->no_hp) }}', '')"
                style="color:#16a34a;text-decoration:none;font-size:12.5px;display:flex;align-items:center;gap:4px;">
               <i class="fab fa-whatsapp" style="font-size:13px;"></i> {{ $item->no_hp }}
             </a>
@@ -90,26 +99,49 @@
             @php $sc = ['Pending'=>'badge-yellow','Proses'=>'badge-blue','Selesai'=>'badge-green','Ditolak'=>'badge-red']; @endphp
             <span class="badge {{ $sc[$item->status] ?? 'badge-gray' }}">{{ $item->status }}</span>
           </td>
-          <td>
-            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-              <!-- Update status form -->
-              <form method="POST" action="{{ route('admin.pengajuan.status', $item->id) }}" style="display:flex;gap:5px;align-items:center;">
-                @csrf
-                <select name="status" class="frm-select" style="padding:6px 10px;font-size:12px;border-radius:8px;width:auto;border:1.5px solid #e2e8f0;">
-                  <option value="Pending"  {{ $item->status==='Pending'  ? 'selected':'' }}>Pending</option>
-                  <option value="Proses"   {{ $item->status==='Proses'   ? 'selected':'' }}>Proses</option>
-                  <option value="Selesai"  {{ $item->status==='Selesai'  ? 'selected':'' }}>Selesai</option>
-                  <option value="Ditolak"  {{ $item->status==='Ditolak'  ? 'selected':'' }}>Ditolak</option>
+          <td style="white-space:nowrap;">
+            <form method="POST" action="{{ route('admin.pengajuan.status', $item->id) }}">
+              @csrf
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:140px;">
+                {{-- Dropdown Status --}}
+                <select name="status" style="
+                  width:100%; padding:6px 10px; font-size:12px;
+                  border-radius:8px; border:1.5px solid #e2e8f0;
+                  background:#f8fafc; color:#374151; cursor:pointer;
+                  font-family:inherit; outline:none;
+                ">
+                  <option value="Pending"  {{ $item->status==='Pending'  ? 'selected':'' }}>⏳ Pending</option>
+                  <option value="Proses"   {{ $item->status==='Proses'   ? 'selected':'' }}>🔄 Proses</option>
+                  <option value="Selesai"  {{ $item->status==='Selesai'  ? 'selected':'' }}>✅ Selesai</option>
+                  <option value="Ditolak"  {{ $item->status==='Ditolak'  ? 'selected':'' }}>❌ Ditolak</option>
                 </select>
-                <button type="submit" class="btn btn-sm btn-primary" style="padding:6px 10px;">
-                  <i class="fas fa-save"></i>
-                </button>
-              </form>
-              <a href="{{ route('admin.chat.show', $item->id) }}" class="btn btn-sm btn-info" style="padding:6px 10px;">
-                <i class="fas fa-comments"></i>
-              </a>
-            </div>
+                {{-- Tombol aksi --}}
+                <div style="display:flex;gap:6px;">
+                  <button type="submit" title="Simpan Status" style="
+                    flex:1; padding:6px 0; border-radius:8px;
+                    border:none; background:#16a34a; color:#fff;
+                    font-size:12px; font-weight:600; cursor:pointer;
+                    display:flex; align-items:center; justify-content:center; gap:4px;
+                  ">
+                    <i class="fas fa-save"></i> Simpan
+                  </button>
+                  <a href="{{ route('admin.chat.show', $item->id) }}" title="Chat" style="
+                    flex:1; padding:6px 0; border-radius:8px;
+                    background:#3b82f6; color:#fff;
+                    font-size:12px; font-weight:600; cursor:pointer;
+                    display:flex; align-items:center; justify-content:center; gap:4px;
+                    text-decoration:none;
+                  ">
+                    <i class="fas fa-comments"></i> Chat
+                    @if($item->unreadChats->count() > 0)
+                      <span style="background:#ef4444;border-radius:99px;padding:1px 5px;font-size:10px;">{{ $item->unreadChats->count() }}</span>
+                    @endif
+                  </a>
+                </div>
+              </div>
+            </form>
           </td>
+
         </tr>
         @endforeach
       </tbody>
@@ -117,4 +149,94 @@
   </div>
   @endif
 </div>
+
+{{-- Toast notifikasi data baru --}}
+<div id="newDataToast" style="
+  display:none; position:fixed; bottom:24px; right:24px; z-index:9999;
+  background:#1e293b; color:#fff; border-radius:14px;
+  padding:14px 20px; font-size:13px; font-weight:600;
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+  align-items:center; gap:12px;
+  animation:slideIn .3s ease;
+">
+  <span style="font-size:20px;">🔔</span>
+  <span id="toastMsg">Ada pengajuan baru masuk!</span>
+  <button onclick="location.reload()" style="
+    margin-left:8px; padding:6px 14px; border-radius:8px;
+    border:none; background:#16a34a; color:#fff;
+    font-size:12px; font-weight:700; cursor:pointer;
+  ">Lihat</button>
+  <button onclick="document.getElementById('newDataToast').style.display='none'" style="
+    padding:4px 8px; border-radius:6px; border:none;
+    background:rgba(255,255,255,.15); color:#fff; cursor:pointer; font-size:12px;
+  ">✕</button>
+</div>
+
+<style>
+  .slide-in { animation: slideIn .3s ease; }
+  @-webkit-keyframes slideIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+</style>
+
+<script>
+// ─── Auto-refresh: polling setiap 15 detik ───────────────────────────────────
+var _lastCount = {{ $pengajuans->count() }};
+var _polling   = true;
+
+function pollNewData() {
+  if (!_polling) return;
+  fetch('{{ route('admin.submissions') }}?count_only=1', {
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(function(r) { return r.json(); })
+  .catch(function() { return null; })
+  .then(function(data) {
+    if (!data) return;
+    var newCount = data.count || 0;
+    if (newCount > _lastCount) {
+      var diff = newCount - _lastCount;
+      document.getElementById('toastMsg').textContent =
+        diff + ' pengajuan baru masuk!';
+      var toast = document.getElementById('newDataToast');
+      toast.style.display = 'flex';
+      _lastCount = newCount;
+      // Juga update badge sidebar
+      document.querySelectorAll('.adm-nav-badge').forEach(function(b) {
+        if (b.closest('a') && b.closest('a').href.includes('pengajuan')) {
+          b.textContent = data.pending || '';
+        }
+      });
+    }
+  });
+}
+
+// Polling setiap 15 detik
+setInterval(pollNewData, 15000);
+
+// \u2500\u2500\u2500 Buka WhatsApp app langsung (bukan WhatsApp Web) \u2500\u2500\u2500
+function bukaWA(e, phone, text) {
+  e.preventDefault();
+  var appUrl = 'whatsapp://send?phone=' + phone + (text ? '&text=' + encodeURIComponent(text) : '');
+  var webUrl = 'https://api.whatsapp.com/send?phone=' + phone + (text ? '&text=' + encodeURIComponent(text) : '');
+
+  // Coba buka aplikasi WhatsApp desktop
+  var iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  var timer = setTimeout(function() {
+    // Aplikasi tidak terbuka \u2014 buka WhatsApp Web sebagai fallback
+    window.open(webUrl, '_blank');
+  }, 800);
+
+  // Kalau browser sudah handle deep link, batalkan fallback
+  window.addEventListener('blur', function onBlur() {
+    clearTimeout(timer);
+    document.body.removeChild(iframe);
+    window.removeEventListener('blur', onBlur);
+  }, { once: true });
+
+  iframe.src = appUrl;
+}
+</script>
 @endsection

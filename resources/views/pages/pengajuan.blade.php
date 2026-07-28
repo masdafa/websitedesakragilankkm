@@ -1,4 +1,4 @@
-﻿@extends("layouts.app")
+@extends("layouts.app")
 @section("content")
 
 <section class="page-hero">
@@ -54,7 +54,10 @@
           </div>
           <div class="form-group">
             <label for="nikPage">NIK <span class="req">*</span></label>
-            <input type="text" id="nikPage" name="nik" maxlength="16" placeholder="16 digit NIK" required>
+            <input type="text" id="nikPage" name="nik" maxlength="16" placeholder="16 digit NIK" required
+              oninput="validasiNIK(this.value)">
+            <div id="nikInfo" style="margin-top:6px;font-size:0.82rem;display:none;"></div>
+            <small style="color:#6b7280;font-size:0.78rem;">⚠️ Hanya KTP Kecamatan Kragilan, Kab. Serang, Banten yang dapat mengajukan surat.</small>
           </div>
         </div>
         <div class="form-row">
@@ -106,9 +109,14 @@
 
         <div id="formAlertPage" class="form-alert" style="display:none"></div>
 
-        <button type="submit" class="btn-submit-form" id="submitBtnPage">
-          <i class="fas fa-paper-plane"></i> Kirim Pengajuan via WhatsApp
-        </button>
+        <div class="form-action-buttons">
+          <button type="submit" class="btn-submit-form" id="submitBtnPage">
+            <i class="fas fa-paper-plane"></i> Kirim Pengajuan via WhatsApp
+          </button>
+          <button type="button" class="btn-reset-form" id="resetBtnPage" onclick="resetForm()">
+            <i class="fas fa-redo-alt"></i> Reset Form
+          </button>
+        </div>
       </form>
     </div>
 
@@ -116,6 +124,63 @@
 </section>
 
 <script>
+// ============================================================
+// VALIDASI NIK KECAMATAN KRAGILAN
+// NIK Indonesia: 16 digit
+// 6 digit pertama = kode wilayah KTP
+// 360411 = Banten (36) + Kab. Serang (04) + Kec. Kragilan (11)
+// ============================================================
+const KODE_KRAGILAN = '360411';
+
+function resetForm() {
+  const form = document.getElementById('formPengajuanPage');
+  form.reset();
+  // Reset NIK info & alert
+  const nikInfo = document.getElementById('nikInfo');
+  nikInfo.style.display = 'none';
+  nikInfo.innerHTML = '';
+  const alertBox = document.getElementById('formAlertPage');
+  alertBox.style.display = 'none';
+  alertBox.innerHTML = '';
+  // Scroll ke atas form
+  form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function validasiNIK(nik) {
+  const nikInfo = document.getElementById('nikInfo');
+  nik = nik.replace(/\D/g, '');
+
+  if (nik.length === 0) {
+    nikInfo.style.display = 'none';
+    return null;
+  }
+  if (nik.length < 6) {
+    nikInfo.style.display = 'block';
+    nikInfo.style.color = '#6b7280';
+    nikInfo.innerHTML = '⏳ Masukkan NIK lengkap 16 digit...';
+    return null;
+  }
+
+  const kodeWilayah = nik.substring(0, 6);
+  const isKragilan = kodeWilayah === KODE_KRAGILAN;
+
+  nikInfo.style.display = 'block';
+  if (nik.length === 16 && isKragilan) {
+    nikInfo.style.color = '#16a34a';
+    nikInfo.innerHTML = '✅ NIK valid — KTP Kecamatan Kragilan, Kab. Serang, Banten.';
+    return true;
+  } else if (nik.length === 16 && !isKragilan) {
+    nikInfo.style.color = '#dc2626';
+    nikInfo.innerHTML = '❌ NIK tidak terdaftar di Kecamatan Kragilan. Pengajuan surat hanya untuk warga Kec. Kragilan, Kab. Serang, Banten.';
+    return false;
+  } else if (nik.length < 16) {
+    nikInfo.style.color = '#6b7280';
+    nikInfo.innerHTML = `⏳ NIK masih ${nik.length}/16 digit...`;
+    return null;
+  }
+  return null;
+}
+
 // Pre-fill jenis surat dari query param
 const urlParams = new URLSearchParams(window.location.search);
 const jenis = urlParams.get('jenis');
@@ -129,7 +194,34 @@ if (jenis) {
 document.getElementById('formPengajuanPage').addEventListener('submit', async function(e) {
   e.preventDefault();
   const btn = document.getElementById('submitBtnPage');
-  const alert = document.getElementById('formAlertPage');
+  const alertBox = document.getElementById('formAlertPage');
+
+  // ─── SECURITY CHECK: Validasi NIK sebelum apapun ───
+  const nikVal = document.getElementById('nikPage').value.replace(/\D/g, '');
+
+  if (nikVal.length !== 16) {
+    alertBox.className = 'form-alert error';
+    alertBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> NIK harus 16 digit.';
+    alertBox.style.display = 'block';
+    document.getElementById('nikPage').focus();
+    return;
+  }
+
+  const kodeWilayah = nikVal.substring(0, 6);
+  if (kodeWilayah !== KODE_KRAGILAN) {
+    alertBox.className = 'form-alert error';
+    alertBox.innerHTML = `
+      <i class="fas fa-ban"></i>
+      <strong>Pengajuan Ditolak!</strong><br>
+      NIK Anda tidak terdaftar di Kecamatan Kragilan, Kabupaten Serang, Banten.<br>
+      <small>Layanan ini hanya tersedia untuk warga ber-KTP Kec. Kragilan. Silakan hubungi kantor desa setempat untuk informasi lebih lanjut.</small>
+    `;
+    alertBox.style.display = 'block';
+    alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return; // ← Hentikan proses, jangan kirim ke server
+  }
+  // ─── END SECURITY CHECK ───
+
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
@@ -146,25 +238,25 @@ document.getElementById('formPengajuanPage').addEventListener('submit', async fu
 
     if (data.status === 'success') {
       const nama = formData.get('namaLengkap');
-      const jenis = formData.get('jenisSurat');
+      const jenisSurat = formData.get('jenisSurat');
       const kode = data.kode_pengajuan;
       const noHP = '{{ preg_replace('/[^0-9]/', '', $siteInfo->contact_whatsapp ?: '6282112345678') }}';
       const pesan = encodeURIComponent(
-        `Halo Admin Desa Kragilan,\n\nSaya ingin mengajukan:\n- Jenis Surat: ${jenis}\n- Nama: ${nama}\n- Kode Pengajuan: ${kode}\n\nMohon bantuannya. Terima kasih.`
+        `Halo Admin Desa Kragilan,\n\nSaya ingin mengajukan:\n- Jenis Surat: ${jenisSurat}\n- Nama: ${nama}\n- Kode Pengajuan: ${kode}\n\nMohon bantuannya. Terima kasih.`
       );
-      alert.className = 'form-alert success';
-      alert.innerHTML = `<i class="fas fa-check-circle"></i> Pengajuan berhasil! Kode: <strong>${kode}</strong>. Halaman WhatsApp akan terbuka...`;
-      alert.style.display = 'block';
-      setTimeout(() => window.open(`https://wa.me/${noHP}?text=${pesan}`, '_blank'), 1500);
+      alertBox.className = 'form-alert success';
+      alertBox.innerHTML = `<i class="fas fa-check-circle"></i> Pengajuan berhasil! Kode: <strong>${kode}</strong>. Halaman WhatsApp akan terbuka...`;
+      alertBox.style.display = 'block';
+      setTimeout(() => window.open(`whatsapp://send?phone=${noHP}&text=${pesan}`, '_self'), 1500);
     } else {
-      alert.className = 'form-alert error';
-      alert.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.message}`;
-      alert.style.display = 'block';
+      alertBox.className = 'form-alert error';
+      alertBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.message}`;
+      alertBox.style.display = 'block';
     }
   } catch (err) {
-    alert.className = 'form-alert error';
-    alert.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal terhubung ke server.';
-    alert.style.display = 'block';
+    alertBox.className = 'form-alert error';
+    alertBox.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal terhubung ke server.';
+    alertBox.style.display = 'block';
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Pengajuan via WhatsApp';

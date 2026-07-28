@@ -87,11 +87,19 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats', 'pengajuans', 'testimonis'));
     }
 
-    public function submissions()
+    public function submissions(Request $request)
     {
         $redirect = $this->ensureAdmin();
         if ($redirect) {
             return $redirect;
+        }
+
+        // ── Polling AJAX: hanya kembalikan jumlah data ──
+        if ($request->has('count_only') || $request->ajax()) {
+            return response()->json([
+                'count'   => PengajuanSurat::count(),
+                'pending' => PengajuanSurat::where('status', 'Pending')->count(),
+            ]);
         }
 
         $pengajuans = PengajuanSurat::with(['latestChat', 'unreadChats'])

@@ -42,7 +42,7 @@
 }
 </style>
 
-<form method="POST" action="{{ route('admin.site.settings.update') }}">
+<form id="settingsForm" method="POST" action="{{ route('admin.site.settings.update') }}" onsubmit="return handleSettingsSubmit(event)">
 @csrf
 
 <!-- ══ TAB: INFO ══ -->
@@ -198,7 +198,7 @@
       <div class="adm-card-title"><i class="fas fa-user-plus" style="color:#16a34a;margin-right:6px;"></i> Tambah Anggota Organisasi</div>
     </div>
     <div class="adm-card-body">
-      <form method="POST" action="{{ route('admin.org.store') }}">
+      <form id="addOrgForm" method="POST" action="{{ route('admin.org.store') }}">
         @csrf
         <div class="frm-grid frm-grid-3" style="margin-bottom:16px;">
           <div class="frm-group">
@@ -243,24 +243,56 @@
     <span style="font-size:13px;color:#64748b;"><i class="fas fa-info-circle"></i> Klik Simpan untuk menyimpan perubahan informasi dan kontak.</span>
     <div style="display:flex;gap:10px;">
       <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary"><i class="fas fa-times"></i> Batal</a>
-      <button type="submit" class="btn btn-primary" style="padding:11px 24px;"><i class="fas fa-save"></i> Simpan Pengaturan</button>
+      <button type="button" onclick="handleSettingsSubmit()" class="btn btn-primary" style="padding:11px 24px;"><i class="fas fa-save"></i> Simpan Pengaturan</button>
     </div>
   </div>
 </div>
 
 </form>
 
-@push('scripts')
+{{-- Modal Konfirmasi Simpan --}}
+<div id="confirmModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.6);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;padding:36px 32px 28px;max-width:420px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.25);">
+    <div style="font-size:48px;margin-bottom:16px;">💾</div>
+    <h3 style="margin:0 0 10px;color:#1e293b;font-size:18px;font-weight:700;">Simpan Perubahan?</h3>
+    <p style="color:#64748b;margin:0 0 28px;font-size:14px;line-height:1.6;">Apakah Anda yakin ingin menyimpan perubahan pengaturan situs ini?</p>
+    <div style="display:flex;gap:12px;">
+      <button onclick="closeConfirm()" style="flex:1;padding:12px;border:2px solid #e2e8f0;border-radius:10px;background:#fff;color:#64748b;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">
+        ✕ Tidak
+      </button>
+      <button onclick="doConfirmYes()" style="flex:1;padding:12px;border:none;border-radius:10px;background:#16a34a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">
+        ✓ Ya, Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
+var _formToSubmit = null;
+
+function handleSettingsSubmit() {
+  _formToSubmit = document.getElementById('settingsForm');
+  document.getElementById('confirmModal').style.display = 'flex';
+}
+
+function doConfirmYes() {
+  document.getElementById('confirmModal').style.display = 'none';
+  if (_formToSubmit) _formToSubmit.submit();
+}
+
+function closeConfirm() {
+  document.getElementById('confirmModal').style.display = 'none';
+  _formToSubmit = null;
+}
+
 function switchTab(tab, el) {
-  document.querySelectorAll('.settings-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.settings-tab').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('saveBar').style.display = tab === 'org' ? 'none' : 'block';
+  document.getElementById('saveBar').style.display = (tab === 'org') ? 'none' : 'block';
 }
-// Initial: show save bar
+
 document.getElementById('saveBar').style.display = 'block';
 </script>
-@endpush
 @endsection

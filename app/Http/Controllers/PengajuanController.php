@@ -76,6 +76,20 @@ class PengajuanController extends Controller
             'pekerjaan'    => 'nullable',
         ]);
 
+        // ─── SECURITY: Validasi NIK wilayah Kecamatan Kragilan ───
+        // NIK 16 digit: [2 Prov][2 Kab/Kota][2 Kecamatan][...]
+        // 36 = Banten | 04 = Kab. Serang | 11 = Kec. Kragilan → "360411"
+        $kodeWilayahKragilan = '360411';
+        $nikInput = $validated['nik'];
+        if (substr($nikInput, 0, 6) !== $kodeWilayahKragilan) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Pengajuan ditolak. NIK tidak terdaftar di Kecamatan Kragilan, Kabupaten Serang, Banten. Layanan ini hanya untuk warga ber-KTP Kec. Kragilan.'
+            ], 403);
+        }
+        // ─── END SECURITY ───
+
+
         try {
             $pengajuan = PengajuanSurat::create([
                 'jenis_surat'   => $validated['jenisSurat'],

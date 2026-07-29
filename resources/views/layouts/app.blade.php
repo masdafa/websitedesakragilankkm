@@ -33,12 +33,9 @@
 <header class="site-header" id="siteHeader">
   <div class="header-inner container">
     <div class="logo-wrap">
-      <img src="{{ asset('assets/images/favicon.svg') }}" alt="Logo Desa Kragilan" class="logo"/>
-      <div class="header-text">
-        <span class="header-label">PEMERINTAH DESA</span>
-        <h1 class="header-title">{{ $siteInfo->profile_title ?? 'Desa Kragilan' }}</h1>
-        <span class="header-sub">{{ $siteInfo->profile_subtitle ?? 'Kecamatan Kragilan • Kabupaten Serang • Provinsi Banten' }}</span>
-      </div>
+      <a href="{{ route('home') }}" style="display:flex;align-items:center;">
+        <img src="{{ asset('assets/images/logo-desa.png') }}" alt="Logo Desa Kragilan" style="height:64px;width:auto;object-fit:contain;"/>
+      </a>
     </div>
     <nav class="main-nav">
       <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
@@ -77,11 +74,7 @@
     <div class="container footer-grid">
       <div class="footer-col footer-brand-col">
         <div class="footer-logo-wrap">
-          <img src="{{ asset('assets/images/favicon.svg') }}" alt="Logo Desa Kragilan" class="footer-logo"/>
-          <div>
-            <div class="footer-brand-name">{{ $siteInfo->profile_title }}</div>
-            <div class="footer-brand-sub">{{ $siteInfo->profile_subtitle }}</div>
-          </div>
+          <img src="{{ asset('assets/images/logo-desa.png') }}" alt="Logo Desa Kragilan" style="height:52px;width:auto;object-fit:contain;"/>
         </div>
         <p class="footer-desc">Website resmi pelayanan administrasi surat Desa Kragilan. Melayani warga dengan cepat, mudah, dan transparan.</p>
         <div class="footer-socials">

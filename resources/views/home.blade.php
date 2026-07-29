@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('content')
 <!-- HERO -->
 <section class="hero" id="beranda">
@@ -621,14 +621,15 @@
     <!-- MAPS -->
     <div class="maps-wrap">
       <h3><i class="fas fa-map-marked-alt"></i> Lokasi Kantor Desa Kragilan</h3>
-      <div class="maps-frame">
+      <div class="maps-frame" style="height:400px;overflow:hidden;border-radius:12px;">
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.9!2d106.1!3d-6.12!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e41f0000000001%3A0x0!2sDesa%20Keragilan%2C%20Kec.%20Serang%2C%20Kab.%20Serang!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+          src="https://maps.google.com/maps?q=-6.138068,106.294197&z=17&output=embed&hl=id"
+          width="100%" height="400" style="border:0;border-radius:12px;"
           allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
           title="Peta lokasi Kantor Desa Kragilan">
         </iframe>
       </div>
-      <a href="https://maps.google.com/?q=Desa+Keragilan+Serang+Banten" target="_blank" rel="noopener" class="btn btn-primary maps-btn">
+      <a href="https://www.google.com/maps/search/?api=1&query=-6.138068,106.294197" target="_blank" rel="noopener" class="btn btn-primary maps-btn">
         <i class="fas fa-directions"></i> Buka di Google Maps
       </a>
     </div>

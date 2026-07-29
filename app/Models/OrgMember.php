@@ -11,6 +11,7 @@ class OrgMember extends Model
         'position',
         'category',
         'icon',
+        'photo',
         'sort_order',
     ];
 

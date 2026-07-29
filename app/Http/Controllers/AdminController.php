@@ -222,12 +222,18 @@ class AdminController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'category' => 'required|string|max:50',
-            'icon' => 'nullable|string|max:100',
+            'name'       => 'required|string|max:255',
+            'position'   => 'required|string|max:255',
+            'category'   => 'required|string|max:50',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'sort_order' => 'required|integer|min:0',
         ]);
+
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('org-photos', 'public');
+            $validated['photo'] = $path;
+        }
+        unset($validated['icon']);
 
         OrgMember::create($validated);
 
@@ -247,12 +253,22 @@ class AdminController extends Controller
 
         $member = OrgMember::findOrFail($id);
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'category' => 'required|string|max:50',
-            'icon' => 'nullable|string|max:100',
+            'name'       => 'required|string|max:255',
+            'position'   => 'required|string|max:255',
+            'category'   => 'required|string|max:50',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'sort_order' => 'required|integer|min:0',
         ]);
+
+        if ($request->hasFile('photo')) {
+            // Hapus foto lama jika ada
+            if ($member->photo && \Storage::disk('public')->exists($member->photo)) {
+                \Storage::disk('public')->delete($member->photo);
+            }
+            $validated['photo'] = $request->file('photo')->store('org-photos', 'public');
+        } else {
+            unset($validated['photo']); // jangan overwrite dengan null
+        }
 
         $member->update($validated);
 

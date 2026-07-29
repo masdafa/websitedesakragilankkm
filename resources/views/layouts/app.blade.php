@@ -19,7 +19,7 @@
 <div class="top-bar">
   <div class="container top-bar-inner">
     <div class="top-bar-left">
-      <span><i class="fas fa-map-marker-alt"></i> {{ $siteInfo->contact_address }}</span>
+      <a href="https://maps.app.goo.gl/2aokwZJpc8S8nWw0Y" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; transition: opacity 0.3s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1"><i class="fas fa-map-marker-alt"></i> {{ $siteInfo->contact_address }}</a>
       <span><i class="fas fa-clock"></i> {{ explode("\n", $siteInfo->service_hours)[0] ?? $siteInfo->service_hours }}</span>
     </div>
     <div class="top-bar-right">
@@ -39,7 +39,7 @@
     </div>
     <nav class="main-nav">
       <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
-      <a href="{{ route('home') }}#profil" class="{{ request()->routeIs('home') ? '' : '' }}">Profil Desa</a>
+      <a href="{{ route('profil') }}" class="{{ request()->routeIs('profil') ? 'active' : '' }}">Profil Desa</a>
       <a href="{{ route('pelayanan') }}" class="{{ request()->routeIs('pelayanan') ? 'active' : '' }}">Pelayanan</a>
       <a href="{{ route('persyaratan') }}" class="{{ request()->routeIs('persyaratan') ? 'active' : '' }}">Persyaratan</a>
       <a href="{{ route('pengajuan') }}" class="{{ request()->routeIs('pengajuan') ? 'active' : '' }}">Pengajuan</a>
@@ -55,7 +55,7 @@
   </div>
   <nav class="mobile-nav" id="mobileNav">
     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
-    <a href="{{ route('home') }}#profil" class="{{ request()->routeIs('home') ? '' : '' }}">Profil Desa</a>
+    <a href="{{ route('profil') }}" class="{{ request()->routeIs('profil') ? 'active' : '' }}"><i class="fas fa-info-circle"></i> Profil Desa</a>
     <a href="{{ route('pelayanan') }}" class="{{ request()->routeIs('pelayanan') ? 'active' : '' }}">Pelayanan</a>
     <a href="{{ route('persyaratan') }}" class="{{ request()->routeIs('persyaratan') ? 'active' : '' }}">Persyaratan</a>
     <a href="{{ route('pengajuan') }}" class="{{ request()->routeIs('pengajuan') ? 'active' : '' }}">Pengajuan</a>
@@ -110,7 +110,7 @@
       <div class="footer-col">
         <h4 class="footer-heading">Kontak Kami</h4>
         <ul class="footer-contact-list">
-          <li><i class="fas fa-map-marker-alt"></i><span>{{ $siteInfo->contact_address }}</span></li>
+          <li><i class="fas fa-map-marker-alt"></i><a href="https://maps.app.goo.gl/2aokwZJpc8S8nWw0Y" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">{{ $siteInfo->contact_address }}</a></li>
           <li><i class="fas fa-phone-alt"></i><span>{{ $siteInfo->contact_phone }}</span></li>
           <li><i class="fab fa-whatsapp"></i><span>{{ $siteInfo->contact_whatsapp }}</span></li>
           <li><i class="fas fa-envelope"></i><span>{{ $siteInfo->contact_email }}</span></li>

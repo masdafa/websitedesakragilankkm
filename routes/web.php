@@ -7,6 +7,7 @@ use App\Http\Controllers\UmkmController;
 
 Route::get('/', [PengajuanController::class, 'index'])->name('home');
 Route::get('/pelayanan', [PengajuanController::class, 'pelayanan'])->name('pelayanan');
+Route::get('/profil', [PengajuanController::class, 'profil'])->name('profil');
 Route::get('/persyaratan', [PengajuanController::class, 'persyaratan'])->name('persyaratan');
 Route::get('/pengajuan', [PengajuanController::class, 'pengajuan'])->name('pengajuan');
 Route::get('/cek-status', [PengajuanController::class, 'cekStatus'])->name('cek-status');

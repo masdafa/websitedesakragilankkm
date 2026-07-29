@@ -1,4 +1,4 @@
-﻿@extends("layouts.app")
+@extends("layouts.app")
 @section("content")
 
 <!-- PAGE HERO -->
@@ -67,11 +67,22 @@
 
 <script>
 function filterSurat(btn, kat) {
+  // Update tombol aktif
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+
+  // Filter kartu berdasarkan kategori
   document.querySelectorAll('.surat-card').forEach(card => {
-    card.classList.toggle('hidden', kat !== 'semua' && card.dataset.kategori !== kat);
+    const cocok = kat === 'semua' || card.getAttribute('data-kategori') === kat;
+    card.style.display = cocok ? 'flex' : 'none';
   });
 }
+
+// Pastikan semua kartu tampil saat halaman pertama dimuat
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.surat-card').forEach(card => {
+    card.style.display = 'flex';
+  });
+});
 </script>
 @endsection

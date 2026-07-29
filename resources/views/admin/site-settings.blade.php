@@ -132,8 +132,13 @@
 <!-- ══ TAB: ORG ══ -->
 <div class="tab-pane" id="tab-org">
   <div class="adm-card" style="margin-bottom:20px;">
-    <div class="adm-card-header">
+    <div class="adm-card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
       <div class="adm-card-title"><i class="fas fa-users" style="color:#16a34a;margin-right:6px;"></i> Struktur Organisasi</div>
+      <a href="{{ route('home') }}#struktur-org" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#eff6ff;color:#2563eb;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;border:1px solid #bfdbfe;transition:all .2s;"
+         onmouseover="this.style.background='#2563eb';this.style.color='#fff'" onmouseout="this.style.background='#eff6ff';this.style.color='#2563eb'">
+        <i class="fas fa-external-link-alt"></i> Lihat di Website
+      </a>
     </div>
     <div class="adm-table-wrap">
       <table class="adm-table">
@@ -143,6 +148,7 @@
             <th>Nama</th>
             <th>Jabatan</th>
             <th>Kategori</th>
+            <th>Foto</th>
             <th>Urutan</th>
             <th style="width:120px;">Aksi</th>
           </tr>
@@ -151,7 +157,7 @@
           @forelse($orgMembers as $member)
           <tr>
             @if(!empty($member->id))
-            <form method="POST" action="{{ route('admin.org.update', $member->id) }}">
+            <form method="POST" action="{{ route('admin.org.update', $member->id) }}" enctype="multipart/form-data">
               @csrf
               <td style="color:#94a3b8;font-size:12px;">{{ $loop->iteration }}</td>
               <td><input type="text" name="name" value="{{ old('name', $member->name) }}" class="frm-input" style="padding:7px 10px;font-size:13px;min-width:150px;"></td>
@@ -162,8 +168,20 @@
                   <option value="{{ $v }}" {{ $member->category===$v?'selected':'' }}>{{ $l }}</option>
                   @endforeach
                 </select>
-                <!-- hidden fields not shown in org tab -->
-                <input type="hidden" name="icon" value="{{ $member->icon }}">
+              </td>
+              <td>
+                {{-- Preview foto saat ini --}}
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                  @if($member->photo)
+                    <img src="{{ asset('storage/'.$member->photo) }}" alt="foto" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #e2e8f0;">
+                  @else
+                    <div style="width:48px;height:48px;border-radius:50%;background:#f1f5f9;border:2px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:18px;"><i class="fas fa-user"></i></div>
+                  @endif
+                  <label style="font-size:11px;color:#3b82f6;cursor:pointer;font-weight:600;">
+                    <i class="fas fa-upload"></i> Upload
+                    <input type="file" name="photo" accept="image/*" style="display:none;" onchange="previewOrgPhoto(this)">
+                  </label>
+                </div>
               </td>
               <td><input type="number" name="sort_order" value="{{ old('sort_order',$member->sort_order) }}" min="0" class="frm-input" style="padding:7px 10px;font-size:13px;width:70px;"></td>
               <td>
@@ -198,7 +216,7 @@
       <div class="adm-card-title"><i class="fas fa-user-plus" style="color:#16a34a;margin-right:6px;"></i> Tambah Anggota Organisasi</div>
     </div>
     <div class="adm-card-body">
-      <form id="addOrgForm" method="POST" action="{{ route('admin.org.store') }}">
+      <form id="addOrgForm" method="POST" action="{{ route('admin.org.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="frm-grid frm-grid-3" style="margin-bottom:16px;">
           <div class="frm-group">
@@ -222,9 +240,19 @@
             </select>
           </div>
           <div class="frm-group">
-            <label class="frm-label">Icon FontAwesome</label>
-            <input type="text" name="icon" class="frm-input" placeholder="fa-user-tie">
-            <span class="frm-hint">Nama icon dari fontawesome.com</span>
+            <label class="frm-label">Foto</label>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div id="newPhotoPreview" style="width:56px;height:56px;border-radius:50%;background:#f1f5f9;border:2px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:22px;flex-shrink:0;overflow:hidden;">
+                <i class="fas fa-user"></i>
+              </div>
+              <div>
+                <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#eff6ff;color:#2563eb;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #bfdbfe;">
+                  <i class="fas fa-upload"></i> Pilih Foto
+                  <input type="file" name="photo" accept="image/*" style="display:none;" onchange="previewNewOrgPhoto(this)">
+                </label>
+                <p class="frm-hint" style="margin-top:5px;">JPG/PNG/WebP, maks. 2MB</p>
+              </div>
+            </div>
           </div>
           <div class="frm-group">
             <label class="frm-label">Urutan</label>
@@ -294,5 +322,38 @@ function switchTab(tab, el) {
 }
 
 document.getElementById('saveBar').style.display = 'block';
+
+// Preview foto di baris tabel (edit existing)
+function previewOrgPhoto(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    var container = input.closest('div[style*="flex-direction:column"]');
+    reader.onload = function(e) {
+      var img = container.querySelector('img');
+      var placeholder = container.querySelector('div[style*="border-radius:50%"]');
+      if (!img) {
+        img = document.createElement('img');
+        img.style.cssText = 'width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #16a34a;';
+        if (placeholder) placeholder.replaceWith(img);
+        else container.insertBefore(img, container.firstChild);
+      }
+      img.src = e.target.result;
+      img.style.border = '2px solid #16a34a';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// Preview foto di form Tambah Anggota
+function previewNewOrgPhoto(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var preview = document.getElementById('newPhotoPreview');
+      preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
 </script>
 @endsection

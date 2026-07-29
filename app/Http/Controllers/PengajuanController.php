@@ -10,12 +10,9 @@ class PengajuanController extends Controller
 {
     public function index()
     {
-        $testimonis = Testimoni::where('disetujui', true)->latest()->take(6)->get();
+        $testimonis = Testimoni::where('disetujui', true)->latest()->take(1)->get();
         $defaultTestimonis = collect([
             ['nama'=>'Ibu Sari Dewi','wilayah'=>'Warga RT 03 / RW 01','isi'=>'Sekarang ngurus surat domisili jauh lebih gampang. Persyaratannya sudah bisa dicek di website dulu, jadi pas datang langsung selesai dalam 1 hari. Pelayanannya ramah!','bintang'=>5],
-            ['nama'=>'Bapak Hendra S.','wilayah'=>'Warga RT 07 / RW 02','isi'=>'Alhamdulillah urus SKTM untuk beasiswa anak sangat mudah. Petugasnya sabar menjelaskan persyaratan. Website ini sangat membantu.','bintang'=>5],
-            ['nama'=>'Ibu Nur Hayati','wilayah'=>'Warga RT 12 / RW 04','isi'=>'Formulir bisa diunduh dari website, jadi saya isi dulu di rumah. Waktu datang ke kantor desa proses jadi lebih cepat.','bintang'=>4],
-            ['nama'=>'Bapak Agus W.','wilayah'=>'Warga RT 15 / RW 05','isi'=>'Fitur kirim via WhatsApp sangat praktis. Sebelum datang saya kirim dulu datanya, petugas langsung konfirmasi.','bintang'=>5],
         ]);
         if ($testimonis->isEmpty()) { $testimonis = $defaultTestimonis; }
         return view('home', compact('testimonis'));
@@ -24,6 +21,11 @@ class PengajuanController extends Controller
     public function pelayanan()
     {
         return view('pages.pelayanan');
+    }
+
+    public function profil()
+    {
+        return view('pages.profil');
     }
 
     public function persyaratan()

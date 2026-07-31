@@ -111,7 +111,7 @@
 
         <div class="form-action-buttons">
           <button type="submit" class="btn-submit-form" id="submitBtnPage">
-            <i class="fas fa-paper-plane"></i> Kirim Pengajuan via WhatsApp
+            <i class="fas fa-paper-plane"></i> Kirim Pengajuan
           </button>
           <button type="button" class="btn-reset-form" id="resetBtnPage" onclick="resetForm()">
             <i class="fas fa-redo-alt"></i> Reset Form
@@ -240,14 +240,10 @@ document.getElementById('formPengajuanPage').addEventListener('submit', async fu
       const nama = formData.get('namaLengkap');
       const jenisSurat = formData.get('jenisSurat');
       const kode = data.kode_pengajuan;
-      const noHP = '{{ preg_replace('/[^0-9]/', '', $siteInfo->contact_whatsapp ?: '6282112345678') }}';
-      const pesan = encodeURIComponent(
-        `Halo Admin Desa Kragilan,\n\nSaya ingin mengajukan:\n- Jenis Surat: ${jenisSurat}\n- Nama: ${nama}\n- Kode Pengajuan: ${kode}\n\nMohon bantuannya. Terima kasih.`
-      );
       alertBox.className = 'form-alert success';
-      alertBox.innerHTML = `<i class="fas fa-check-circle"></i> Pengajuan berhasil! Kode: <strong>${kode}</strong>. Halaman WhatsApp akan terbuka...`;
+      alertBox.innerHTML = `<i class="fas fa-check-circle"></i> Pengajuan berhasil! Kode: <strong>${kode}</strong>. Data telah masuk ke sistem.`;
       alertBox.style.display = 'block';
-      setTimeout(() => window.open(`whatsapp://send?phone=${noHP}&text=${pesan}`, '_self'), 1500);
+      setTimeout(() => resetForm(), 3000);
     } else {
       alertBox.className = 'form-alert error';
       alertBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.message}`;
@@ -259,7 +255,7 @@ document.getElementById('formPengajuanPage').addEventListener('submit', async fu
     alertBox.style.display = 'block';
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Pengajuan via WhatsApp';
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Pengajuan';
   }
 });
 </script>

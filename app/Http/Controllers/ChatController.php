@@ -14,6 +14,17 @@ class ChatController extends Controller
             return redirect()->route('admin.login');
         }
 
+        $currentSessionId = session()->getId();
+        $activeAdmins = \Illuminate\Support\Facades\Cache::get('admin_active_sessions', []);
+        
+        if (!isset($activeAdmins[$currentSessionId])) {
+            session()->forget(['admin_logged_in', 'admin_name']);
+            return redirect()->route('admin.login')->withErrors(['login' => 'Sesi Anda telah berakhir karena batas maksimal 2 admin telah tercapai (login dari perangkat lain).']);
+        }
+
+        $activeAdmins[$currentSessionId] = time();
+        \Illuminate\Support\Facades\Cache::put('admin_active_sessions', $activeAdmins);
+
         return null;
     }
 

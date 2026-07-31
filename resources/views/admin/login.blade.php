@@ -232,9 +232,7 @@
         <img src="{{ asset('assets/images/logo-desa.png') }}" alt="Logo Desa Kragilan"/>
       </div>
       <h2 class="left-title">Panel Administrasi<br>Desa Kragilan</h2>
-      <p class="left-subtitle">
-        Sistem manajemen layanan administrasi desa yang modern, aman, dan mudah digunakan.
-      </p>
+
 
     </div>
   </div>

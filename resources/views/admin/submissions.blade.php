@@ -51,7 +51,6 @@
           <th>Alamat</th>
           <th>No. HP</th>
           <th>Waktu</th>
-          <th>Chat</th>
           <th>Status</th>
           <th>Aksi</th>
         </tr>
@@ -83,18 +82,7 @@
             {{ $item->created_at->format('d M Y') }}<br>
             <span style="font-size:11px;">{{ $item->created_at->format('H:i') }}</span>
           </td>
-          <td>
-            @if($item->latestChat)
-              <div style="max-width:160px;">
-                <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ Str::limit($item->latestChat->message, 35) }}</div>
-                @if($item->unreadChats->count() > 0)
-                  <span class="badge badge-red" style="margin-top:4px;font-size:10px;">{{ $item->unreadChats->count() }} baru</span>
-                @endif
-              </div>
-            @else
-              <span style="color:#cbd5e1;font-size:12px;">—</span>
-            @endif
-          </td>
+
           <td>
             @php $sc = ['Pending'=>'badge-yellow','Proses'=>'badge-blue','Selesai'=>'badge-green','Ditolak'=>'badge-red']; @endphp
             <span class="badge {{ $sc[$item->status] ?? 'badge-gray' }}">{{ $item->status }}</span>
@@ -125,18 +113,7 @@
                   ">
                     <i class="fas fa-save"></i> Simpan
                   </button>
-                  <a href="{{ route('admin.chat.show', $item->id) }}" title="Chat" style="
-                    flex:1; padding:6px 0; border-radius:8px;
-                    background:#3b82f6; color:#fff;
-                    font-size:12px; font-weight:600; cursor:pointer;
-                    display:flex; align-items:center; justify-content:center; gap:4px;
-                    text-decoration:none;
-                  ">
-                    <i class="fas fa-comments"></i> Chat
-                    @if($item->unreadChats->count() > 0)
-                      <span style="background:#ef4444;border-radius:99px;padding:1px 5px;font-size:10px;">{{ $item->unreadChats->count() }}</span>
-                    @endif
-                  </a>
+
                 </div>
               </div>
             </form>

@@ -19,6 +19,17 @@ class AdminController extends Controller
             return redirect()->route('admin.login');
         }
 
+        $currentSessionId = session()->getId();
+        $activeAdmins = \Illuminate\Support\Facades\Cache::get('admin_active_sessions', []);
+        
+        if (!isset($activeAdmins[$currentSessionId])) {
+            session()->forget(['admin_logged_in', 'admin_name']);
+            return redirect()->route('admin.login')->withErrors(['login' => 'Sesi Anda telah berakhir karena batas maksimal 2 admin telah tercapai (login dari perangkat lain).']);
+        }
+
+        $activeAdmins[$currentSessionId] = time();
+        \Illuminate\Support\Facades\Cache::put('admin_active_sessions', $activeAdmins);
+
         return null;
     }
 
@@ -42,6 +53,25 @@ class AdminController extends Controller
         $expectedPassword = env('ADMIN_PASSWORD', 'admin12345');
 
         if ($request->email === $expectedEmail && $request->password === $expectedPassword) {
+            $currentSessionId = session()->getId();
+            $activeAdmins = \Illuminate\Support\Facades\Cache::get('admin_active_sessions', []);
+            
+            $validAdmins = [];
+            foreach ($activeAdmins as $sId => $time) {
+                if (time() - $time < config('session.lifetime') * 60) {
+                    $validAdmins[$sId] = $time;
+                }
+            }
+
+            if (!isset($validAdmins[$currentSessionId]) && count($validAdmins) >= 2) {
+                asort($validAdmins);
+                $oldestSessionId = array_key_first($validAdmins);
+                unset($validAdmins[$oldestSessionId]);
+            }
+            
+            $validAdmins[$currentSessionId] = time();
+            \Illuminate\Support\Facades\Cache::put('admin_active_sessions', $validAdmins);
+
             session([
                 'admin_logged_in' => true,
                 'admin_name' => 'Admin Desa Kragilan',
@@ -55,6 +85,13 @@ class AdminController extends Controller
 
     public function logout()
     {
+        $currentSessionId = session()->getId();
+        $activeAdmins = \Illuminate\Support\Facades\Cache::get('admin_active_sessions', []);
+        if (isset($activeAdmins[$currentSessionId])) {
+            unset($activeAdmins[$currentSessionId]);
+            \Illuminate\Support\Facades\Cache::put('admin_active_sessions', $activeAdmins);
+        }
+
         session()->forget(['admin_logged_in', 'admin_name']);
 
         return redirect()->route('admin.login');

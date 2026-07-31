@@ -12,6 +12,7 @@ Route::get('/persyaratan', [PengajuanController::class, 'persyaratan'])->name('p
 Route::get('/pengajuan', [PengajuanController::class, 'pengajuan'])->name('pengajuan');
 Route::get('/cek-status', [PengajuanController::class, 'cekStatus'])->name('cek-status');
 Route::post('/submit-pengajuan', [PengajuanController::class, 'store'])->name('pengajuan.store');
+Route::get('/pengajuan/{id}/cetak', [PengajuanController::class, 'cetak'])->name('pengajuan.cetak');
 Route::get('/cek-status/search', [PengajuanController::class, 'searchStatus'])->name('cek-status.search');
 Route::post('/testimoni', [App\Http\Controllers\TestimoniController::class, 'store'])->name('testimoni.store');
 Route::get('/umkm', [UmkmController::class, 'index'])->name('umkm');

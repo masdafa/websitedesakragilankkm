@@ -62,6 +62,19 @@ class PengajuanController extends Controller
         return view('pages.cek-status', compact('results', 'query'));
     }
 
+    public function cetak($id)
+    {
+        $pengajuan = PengajuanSurat::findOrFail($id);
+        
+        if ($pengajuan->status !== 'Selesai') {
+            abort(403, 'Surat belum selesai diproses.');
+        }
+
+        $romans = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+
+        return view('pages.cetak-surat', compact('pengajuan', 'romans'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

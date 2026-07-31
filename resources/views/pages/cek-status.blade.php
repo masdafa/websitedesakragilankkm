@@ -1,4 +1,4 @@
-﻿@extends("layouts.app")
+@extends("layouts.app")
 @section("content")
 
 <section class="page-hero">
@@ -67,7 +67,10 @@
               </div>
               @if($item->status === "Selesai")
               <div class="status-note success-note">
-                <i class="fas fa-check-circle"></i> Surat Anda sudah selesai diproses. Silakan datang ke Balai Desa untuk mengambil surat dengan membawa KTP asli.
+                <p style="margin-top: 0; margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Surat Anda sudah selesai diproses. Anda dapat mencetak surat secara mandiri di bawah ini, atau mengambil aslinya di Balai Desa.</p>
+                <a href="{{ route('pengajuan.cetak', $item->id) }}" target="_blank" class="btn btn-primary" style="padding: 6px 14px; font-size: 13px; font-weight: 600;">
+                  <i class="fas fa-print"></i> Cetak/Simpan Surat Ini
+                </a>
               </div>
               @elseif($item->status === "Proses")
               <div class="status-note process-note">

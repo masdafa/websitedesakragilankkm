@@ -93,8 +93,38 @@
           </div>
         </div>
         <div class="form-group">
+          <label for="statusPerkawinanPage">Status Perkawinan <span class="req">*</span></label>
+          <select id="statusPerkawinanPage" name="statusPerkawinan" required>
+            <option value="">-- Pilih --</option>
+            <option>Belum Kawin</option>
+            <option>Kawin</option>
+            <option>Cerai Hidup</option>
+            <option>Cerai Mati</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="alamatPage">Alamat Lengkap <span class="req">*</span></label>
-          <textarea id="alamatPage" name="alamat" rows="3" placeholder="Jalan, RT/RW, Dusun, Desa" required></textarea>
+          <textarea id="alamatPage" name="alamat" rows="2" placeholder="Nama Jalan, Kampung, Dusun" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rtPage">RT <span class="req">*</span></label>
+            <input type="text" id="rtPage" name="rt" placeholder="001" required>
+          </div>
+          <div class="form-group">
+            <label for="rwPage">RW <span class="req">*</span></label>
+            <input type="text" id="rwPage" name="rw" placeholder="001" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nomorSuratPengantarPage">Nomor Surat Pengantar RT/RW <span class="req">*</span></label>
+            <input type="text" id="nomorSuratPengantarPage" name="nomorSuratPengantar" placeholder="Contoh: 001/SP/RT01/RW02/2026" required>
+          </div>
+          <div class="form-group" id="groupTinggalDi" style="display: none;">
+            <label for="tinggalDiPage">Nama Pemilik Rumah (Jika Mengontrak)</label>
+            <input type="text" id="tinggalDiPage" name="tinggalDi" placeholder="Cth: Bpk. Budi (Kosongkan jika rumah sendiri)">
+          </div>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -102,8 +132,8 @@
             <input type="tel" id="noHPPage" name="noHP" placeholder="08xxxxxxxxxx" required>
           </div>
           <div class="form-group">
-            <label for="pekerjaanPage">Pekerjaan</label>
-            <input type="text" id="pekerjaanPage" name="pekerjaan" placeholder="Opsional">
+            <label for="pekerjaanPage">Pekerjaan <span class="req">*</span></label>
+            <input type="text" id="pekerjaanPage" name="pekerjaan" placeholder="Cth: Wiraswasta, Karyawan Swasta" required>
           </div>
         </div>
 
@@ -126,11 +156,20 @@
 <script>
 // ============================================================
 // VALIDASI NIK KECAMATAN KRAGILAN
-// NIK Indonesia: 16 digit
-// 6 digit pertama = kode wilayah KTP
-// 360411 = Banten (36) + Kab. Serang (04) + Kec. Kragilan (11)
 // ============================================================
 const KODE_KRAGILAN = '360411';
+
+// Toggle fields based on Jenis Surat
+document.getElementById('jenisSuratPage').addEventListener('change', function() {
+    const val = this.value;
+    const groupTinggalDi = document.getElementById('groupTinggalDi');
+    if (val === 'Surat Keterangan Domisili') {
+        groupTinggalDi.style.display = 'block';
+    } else {
+        groupTinggalDi.style.display = 'none';
+        document.getElementById('tinggalDiPage').value = '';
+    }
+});
 
 function resetForm() {
   const form = document.getElementById('formPengajuanPage');

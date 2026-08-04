@@ -45,21 +45,30 @@
         }
         .header {
             text-align: center;
-            border-bottom: 3px solid black;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
+            border-bottom: 4px solid black;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
             position: relative;
+        }
+        .header::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -7px;
+            border-bottom: 1px solid black;
         }
         .header img {
             position: absolute;
-            left: 0;
-            top: 0;
-            width: 60px;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 85px;
+            filter: grayscale(100%) contrast(1.2);
         }
-        .header h3 { margin: 0; font-size: 13pt; font-weight: normal; }
-        .header h2 { margin: 0; font-size: 15pt; font-weight: bold; }
-        .header h1 { margin: 0; font-size: 17pt; font-weight: bold; }
-        .header p { margin: 0; font-size: 9pt; font-style: italic; }
+        .header h3 { margin: 0; font-size: 16pt; font-weight: normal; text-transform: uppercase; }
+        .header h1 { margin: 0; font-size: 22pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .header p { margin: 0; font-size: 11pt; font-style: italic; }
         
         .title {
             text-align: center;
@@ -153,7 +162,7 @@
     <div class="page">
         <!-- KOP SURAT -->
         <div class="header">
-            <img src="{{ asset('assets/images/logo-desa.png') }}" alt="Logo Kab Serang">
+            <img src="/assets/images/logo-kop-surat.png" alt="Logo Kab Serang">
             <h3>PEMERINTAH KABUPATEN SERANG</h3>
             <h3>KECAMATAN KRAGILAN</h3>
             <h1>DESA KRAGILAN</h1>
@@ -169,7 +178,7 @@
         <!-- ISI SURAT -->
         <div class="content">
             <p class="indent">
-                Menindaklanjuti Surat Pengantar dari Ketua Rukun Tetangga (RT) .... Rukun Warga (RW) .... Kampung ................. Desa Kragilan Nomor : ..... /SP/RT..../..../{{ date('Y') }}, Perihal Surat Pengantar {{ str_replace('Surat Keterangan ', '', $pengajuan->jenis_surat) }}, Dengan ini Kepala Desa Kragilan menerangkan bahwa nama tersebut dibawah ini :
+                Menindaklanjuti Surat Pengantar dari Ketua Rukun Tetangga (RT) {{ $pengajuan->rt ? str_pad($pengajuan->rt, 3, '0', STR_PAD_LEFT) : '...' }} Rukun Warga (RW) {{ $pengajuan->rw ? str_pad($pengajuan->rw, 3, '0', STR_PAD_LEFT) : '...' }} Kampung {{ $pengajuan->alamat }} Desa Kragilan Nomor : {{ $pengajuan->nomor_surat_pengantar ?? '.....' }}, Perihal Surat Pengantar {{ str_replace('Surat Keterangan ', '', $pengajuan->jenis_surat) }}, Dengan ini Kepala Desa Kragilan menerangkan bahwa nama tersebut dibawah ini :
             </p>
             
             <table class="data-table">
@@ -201,7 +210,7 @@
                 <tr>
                     <td>Status Perkawinan</td>
                     <td>:</td>
-                    <td>................................</td>
+                    <td>{{ $pengajuan->status_perkawinan ?? '................................' }}</td>
                 </tr>
                 <tr>
                     <td>Kewarganegaraan</td>
@@ -245,10 +254,32 @@
                 </tr>
             </table>
             
+            @if($pengajuan->jenis_surat == 'Surat Keterangan Domisili')
             <p class="indent">
-                Menurut Keterangan Ketua Rukun Tetangga (RT) setempat Adalah Benar pada Saat ini bertempat tinggal Kp. ................. RT. ... RW. ... Desa Kragilan Kabupaten Serang yang bersangkutan <strong>Mengontrak / Bertempat Tinggal di Rumah Bapak/Ibu :</strong>
+                Menurut Keterangan Ketua Rukun Tetangga (RT) setempat Adalah Benar pada Saat ini bertempat tinggal Kp. {{ $pengajuan->alamat }} RT. {{ $pengajuan->rt ? str_pad($pengajuan->rt, 3, '0', STR_PAD_LEFT) : '...' }} RW. {{ $pengajuan->rw ? str_pad($pengajuan->rw, 3, '0', STR_PAD_LEFT) : '...' }} Desa Kragilan Kabupaten Serang yang bersangkutan <strong>Mengontrak / Bertempat Tinggal di Rumah Bapak/Ibu :</strong>
             </p>
-            <p style="text-align: center;">--------- ........................................ ---------</p>
+            <p style="text-align: center;">--------- {{ $pengajuan->tinggal_di ?? '........................................' }} ---------</p>
+            
+            @elseif(in_array($pengajuan->jenis_surat, ['Surat Keterangan Tidak Mampu', 'Surat Pengantar BPJS', 'Surat Keterangan untuk Beasiswa']))
+            <p class="indent">
+                Menurut Keterangan Ketua Rukun Tetangga (RT) setempat, Adalah Benar bahwa yang bersangkutan berasal dari keluarga <strong>Kurang Mampu / Pra-Sejahtera</strong>, dan surat keterangan ini dibuat untuk keperluan: <strong>{{ $pengajuan->keperluan }}</strong>.
+            </p>
+            
+            @elseif($pengajuan->jenis_surat == 'Surat Keterangan Usaha')
+            <p class="indent">
+                Menurut Keterangan Ketua Rukun Tetangga (RT) setempat, Adalah Benar bahwa yang bersangkutan memiliki usaha di wilayah Desa Kragilan, Kecamatan Kragilan, Kabupaten Serang.
+            </p>
+            
+            @elseif($pengajuan->jenis_surat == 'Surat Keterangan Belum Menikah')
+            <p class="indent">
+                Menurut Keterangan Ketua Rukun Tetangga (RT) setempat dan berdasarkan catatan yang ada di Desa Kragilan, Adalah Benar bahwa yang bersangkutan berstatus <strong>Belum Pernah Menikah</strong>.
+            </p>
+            
+            @else
+            <p class="indent">
+                Menurut Keterangan Ketua Rukun Tetangga (RT) setempat, Adalah Benar bahwa nama tersebut di atas merupakan warga yang berdomisili di Desa Kragilan, Kecamatan Kragilan, Kabupaten Serang.
+            </p>
+            @endif
             
             <p>Surat Keterangan ini berlaku : <strong>{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::now()->addMonths(6)->translatedFormat('d F Y') }}</strong></p>
             <p class="indent">

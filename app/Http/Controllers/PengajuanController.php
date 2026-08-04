@@ -86,9 +86,14 @@ class PengajuanController extends Controller
             'tanggalLahir' => 'required|date',
             'jenisKelamin' => 'required|in:Laki-laki,Perempuan',
             'agama'        => 'required',
+            'statusPerkawinan' => 'required',
             'alamat'       => 'required',
+            'rt'           => 'required|max:5',
+            'rw'           => 'required|max:5',
+            'nomorSuratPengantar' => 'required|max:50',
+            'tinggalDi'    => 'nullable|max:100',
             'noHP'         => 'required',
-            'pekerjaan'    => 'nullable',
+            'pekerjaan'    => 'required',
         ]);
 
         // ─── SECURITY: Validasi NIK wilayah Kecamatan Kragilan ───
@@ -115,7 +120,12 @@ class PengajuanController extends Controller
                 'tanggal_lahir' => $validated['tanggalLahir'],
                 'jenis_kelamin' => $validated['jenisKelamin'],
                 'agama'         => $validated['agama'],
+                'status_perkawinan' => $validated['statusPerkawinan'],
                 'alamat'        => $validated['alamat'],
+                'rt'            => $validated['rt'],
+                'rw'            => $validated['rw'],
+                'nomor_surat_pengantar' => $validated['nomorSuratPengantar'],
+                'tinggal_di'    => $validated['tinggalDi'],
                 'no_hp'         => $validated['noHP'],
                 'pekerjaan'     => $validated['pekerjaan'] ?? '-',
             ]);
